@@ -1,0 +1,1810 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CBT OSN Semifinal 2025</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0a1628;
+    --navy-mid: #142035;
+    --navy-light: #1e3050;
+    --gold: #e8a020;
+    --gold-light: #f5c455;
+    --cream: #fdf6e8;
+    --white: #ffffff;
+    --green: #22c55e;
+    --red: #ef4444;
+    --blue: #3b82f6;
+    --text-main: #1a2332;
+    --text-muted: #64748b;
+    --border: #e2e8f0;
+    --correct: #dcfce7;
+    --correct-border: #16a34a;
+    --wrong: #fee2e2;
+    --wrong-border: #dc2626;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--navy);
+    color: var(--white);
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content:'';
+    position:fixed;
+    inset:0;
+    background:
+      radial-gradient(ellipse 80% 50% at 20% 10%, rgba(232,160,32,0.08) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 40% at 80% 80%, rgba(59,130,246,0.06) 0%, transparent 60%);
+    pointer-events:none;
+    z-index:0;
+  }
+
+  /* WATERMARK */
+  .watermark {
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    z-index:9999;
+    overflow:hidden;
+  }
+  .watermark::after {
+    content:'Siti Sundari · Siti Sundari · Siti Sundari · Siti Sundari · Siti Sundari · Siti Sundari · Siti Sundari · Siti Sundari · Siti Sundari · Siti Sundari';
+    position:absolute;
+    top:50%;
+    left:-20%;
+    width:140%;
+    text-align:center;
+    font-family:'Playfair Display', serif;
+    font-size:18px;
+    font-weight:700;
+    color:rgba(232,160,32,0.06);
+    letter-spacing:4px;
+    white-space:nowrap;
+    transform:rotate(-35deg) translateY(-50%);
+    text-shadow: none;
+  }
+  .watermark-2 {
+    position:fixed;
+    top:0; left:0; right:0; bottom:0;
+    pointer-events:none;
+    z-index:9998;
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    justify-content:center;
+    gap:60px;
+    overflow:hidden;
+  }
+  .watermark-2 span {
+    font-family:'Playfair Display', serif;
+    font-size:14px;
+    color:rgba(232,160,32,0.05);
+    transform:rotate(-35deg);
+    white-space:nowrap;
+    letter-spacing:2px;
+  }
+
+  /* HEADER */
+  .header {
+    background: linear-gradient(135deg, var(--navy-mid), var(--navy-light));
+    border-bottom: 2px solid rgba(232,160,32,0.3);
+    padding: 16px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(10px);
+  }
+  .header-logo {
+    display:flex;
+    align-items:center;
+    gap:12px;
+  }
+  .header-emblem {
+    width:44px; height:44px;
+    background: linear-gradient(135deg, var(--gold), var(--gold-light));
+    border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-size:20px;
+  }
+  .header-title h1 {
+    font-family:'Playfair Display', serif;
+    font-size:16px;
+    color:var(--gold-light);
+    letter-spacing:1px;
+  }
+  .header-title p {
+    font-size:11px;
+    color:rgba(255,255,255,0.5);
+    letter-spacing:2px;
+    text-transform:uppercase;
+  }
+  .timer-box {
+    background: rgba(0,0,0,0.3);
+    border: 1px solid rgba(232,160,32,0.4);
+    border-radius: 12px;
+    padding: 10px 20px;
+    text-align:center;
+    min-width:120px;
+  }
+  .timer-label { font-size:10px; color:rgba(255,255,255,0.5); letter-spacing:2px; text-transform:uppercase; }
+  .timer-value {
+    font-family:'DM Mono', monospace;
+    font-size:26px;
+    font-weight:500;
+    color:var(--gold-light);
+    letter-spacing:2px;
+  }
+  .timer-value.urgent { color:#ef4444; animation: blink 1s infinite; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.5} }
+
+  /* SCREENS */
+  .screen { display:none; animation: fadeIn .4s ease; }
+  .screen.active { display:block; }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+
+  /* WELCOME SCREEN */
+  .welcome-wrap {
+    min-height:100vh;
+    display:flex; align-items:center; justify-content:center;
+    padding:40px 20px;
+    position:relative;z-index:1;
+  }
+  .welcome-card {
+    background: linear-gradient(145deg, var(--navy-mid), var(--navy-light));
+    border: 1px solid rgba(232,160,32,0.3);
+    border-radius: 24px;
+    padding: 48px;
+    max-width: 600px;
+    width:100%;
+    box-shadow: 0 40px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(232,160,32,0.1);
+  }
+  .welcome-badge {
+    display:inline-flex; align-items:center; gap:8px;
+    background: rgba(232,160,32,0.15);
+    border: 1px solid rgba(232,160,32,0.4);
+    border-radius: 999px;
+    padding: 6px 16px;
+    font-size:12px;
+    color:var(--gold-light);
+    letter-spacing:2px;
+    text-transform:uppercase;
+    margin-bottom:24px;
+  }
+  .welcome-card h2 {
+    font-family:'Playfair Display', serif;
+    font-size:36px;
+    line-height:1.2;
+    margin-bottom:8px;
+  }
+  .welcome-card h2 span { color:var(--gold); }
+  .welcome-card .subtitle {
+    color:rgba(255,255,255,0.5);
+    font-size:15px;
+    margin-bottom:32px;
+    line-height:1.6;
+  }
+
+  .info-grid {
+    display:grid; grid-template-columns:1fr 1fr; gap:12px;
+    margin-bottom:32px;
+  }
+  .info-item {
+    background:rgba(255,255,255,0.05);
+    border:1px solid rgba(255,255,255,0.1);
+    border-radius:12px;
+    padding:14px 16px;
+    display:flex; align-items:center; gap:10px;
+  }
+  .info-item .icon { font-size:20px; }
+  .info-item .info-text { font-size:13px; }
+  .info-item .info-text .label { color:rgba(255,255,255,0.4); font-size:11px; letter-spacing:1px; text-transform:uppercase; }
+  .info-item .info-text .value { color:var(--white); font-weight:500; }
+
+  .form-group { margin-bottom:20px; }
+  .form-label {
+    display:block;
+    font-size:12px;
+    letter-spacing:2px;
+    text-transform:uppercase;
+    color:rgba(255,255,255,0.4);
+    margin-bottom:8px;
+  }
+  .form-control {
+    width:100%;
+    background:rgba(255,255,255,0.07);
+    border:1px solid rgba(255,255,255,0.15);
+    border-radius:10px;
+    padding:12px 16px;
+    color:var(--white);
+    font-family:'DM Sans', sans-serif;
+    font-size:15px;
+    transition:all .2s;
+    outline:none;
+  }
+  .form-control:focus {
+    border-color:var(--gold);
+    background:rgba(232,160,32,0.08);
+    box-shadow:0 0 0 3px rgba(232,160,32,0.15);
+  }
+  .form-control option { background:var(--navy-mid); color:var(--white); }
+
+  .btn-start {
+    width:100%;
+    background: linear-gradient(135deg, var(--gold), var(--gold-light));
+    color:var(--navy);
+    border:none;
+    border-radius:12px;
+    padding:16px;
+    font-family:'DM Sans', sans-serif;
+    font-size:16px;
+    font-weight:600;
+    cursor:pointer;
+    letter-spacing:1px;
+    transition:all .2s;
+    box-shadow:0 4px 20px rgba(232,160,32,0.4);
+  }
+  .btn-start:hover {
+    transform:translateY(-2px);
+    box-shadow:0 8px 30px rgba(232,160,32,0.5);
+  }
+  .btn-start:disabled { opacity:.5; cursor:not-allowed; transform:none; }
+
+  /* SUBJECT SELECTION */
+  .subject-wrap {
+    min-height:100vh;
+    display:flex; align-items:center; justify-content:center;
+    padding:40px 20px;
+    position:relative; z-index:1;
+  }
+  .subject-card {
+    background: linear-gradient(145deg, var(--navy-mid), var(--navy-light));
+    border: 1px solid rgba(232,160,32,0.3);
+    border-radius: 24px;
+    padding: 48px;
+    max-width: 700px;
+    width:100%;
+  }
+  .subject-card h2 {
+    font-family:'Playfair Display', serif;
+    font-size:28px;
+    margin-bottom:8px;
+  }
+  .subject-card p { color:rgba(255,255,255,0.5); margin-bottom:32px; }
+
+  .subject-grid { display:grid; grid-template-columns:1fr; gap:16px; margin-bottom:32px; }
+  .subject-option {
+    background:rgba(255,255,255,0.05);
+    border:2px solid rgba(255,255,255,0.1);
+    border-radius:16px;
+    padding:20px 24px;
+    cursor:pointer;
+    transition:all .3s;
+    display:flex; align-items:center; gap:16px;
+  }
+  .subject-option:hover {
+    border-color:rgba(232,160,32,0.5);
+    background:rgba(232,160,32,0.08);
+    transform:translateX(4px);
+  }
+  .subject-option.selected {
+    border-color:var(--gold);
+    background:rgba(232,160,32,0.12);
+  }
+  .subject-icon {
+    width:48px; height:48px;
+    border-radius:12px;
+    display:flex; align-items:center; justify-content:center;
+    font-size:24px;
+    flex-shrink:0;
+  }
+  .subject-info { flex:1; }
+  .subject-info h3 { font-size:18px; font-weight:600; margin-bottom:4px; }
+  .subject-info p { font-size:13px; color:rgba(255,255,255,0.5); }
+  .subject-check {
+    width:24px; height:24px;
+    border:2px solid rgba(255,255,255,0.2);
+    border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    transition:all .2s;
+  }
+  .subject-option.selected .subject-check {
+    background:var(--gold);
+    border-color:var(--gold);
+    color:var(--navy);
+    font-weight:700;
+  }
+
+  /* EXAM SCREEN */
+  .exam-wrap {
+    max-width:900px;
+    margin:0 auto;
+    padding:32px 20px 80px;
+    position:relative; z-index:1;
+  }
+
+  .exam-progress-bar {
+    background:rgba(255,255,255,0.1);
+    border-radius:999px;
+    height:4px;
+    margin-bottom:32px;
+    overflow:hidden;
+  }
+  .exam-progress-fill {
+    background: linear-gradient(90deg, var(--gold), var(--gold-light));
+    height:100%;
+    border-radius:999px;
+    transition:width .4s ease;
+  }
+
+  .question-header {
+    display:flex; align-items:center; justify-content:space-between;
+    margin-bottom:24px;
+  }
+  .q-badge {
+    background:rgba(232,160,32,0.15);
+    border:1px solid rgba(232,160,32,0.3);
+    border-radius:8px;
+    padding:6px 14px;
+    font-size:13px;
+    color:var(--gold-light);
+    font-weight:500;
+  }
+  .q-nav-dots {
+    display:flex; gap:6px; flex-wrap:wrap; max-width:400px; justify-content:flex-end;
+  }
+  .q-dot {
+    width:10px; height:10px;
+    border-radius:50%;
+    background:rgba(255,255,255,0.15);
+    cursor:pointer;
+    transition:all .2s;
+    border:none;
+  }
+  .q-dot.answered { background:var(--gold); }
+  .q-dot.current { background:var(--gold-light); transform:scale(1.3); }
+
+  .question-card {
+    background: linear-gradient(145deg, var(--navy-mid), #162840);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 20px;
+    padding: 32px;
+    margin-bottom: 20px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  }
+  .q-subject-tag {
+    display:inline-flex; align-items:center; gap:6px;
+    font-size:11px;
+    letter-spacing:2px;
+    text-transform:uppercase;
+    color:rgba(255,255,255,0.4);
+    margin-bottom:16px;
+  }
+  .q-subject-tag .dot { width:6px; height:6px; border-radius:50%; }
+
+  .question-text {
+    font-size:16px;
+    line-height:1.8;
+    color:rgba(255,255,255,0.9);
+    margin-bottom:8px;
+  }
+  .question-text strong { color:var(--gold-light); }
+
+  .stimulus-box {
+    background:rgba(255,255,255,0.04);
+    border:1px solid rgba(255,255,255,0.1);
+    border-left:3px solid var(--gold);
+    border-radius:0 12px 12px 0;
+    padding:16px 20px;
+    margin:16px 0;
+    font-size:14px;
+    line-height:1.7;
+    color:rgba(255,255,255,0.75);
+  }
+  .stimulus-box table {
+    width:100%;
+    border-collapse:collapse;
+    margin-top:8px;
+    font-size:13px;
+  }
+  .stimulus-box table th {
+    background:rgba(232,160,32,0.15);
+    padding:8px 12px;
+    text-align:left;
+    border:1px solid rgba(255,255,255,0.1);
+    color:var(--gold-light);
+    font-weight:600;
+  }
+  .stimulus-box table td {
+    padding:7px 12px;
+    border:1px solid rgba(255,255,255,0.07);
+    color:rgba(255,255,255,0.8);
+  }
+  .stimulus-box table tr:hover td { background:rgba(255,255,255,0.03); }
+
+  .formula-display {
+    background:rgba(0,0,0,0.3);
+    border:1px solid rgba(255,255,255,0.1);
+    border-radius:10px;
+    padding:12px 20px;
+    font-family:'DM Mono', monospace;
+    font-size:13px;
+    color:var(--gold-light);
+    margin:10px 0;
+    text-align:center;
+  }
+
+  .diagram-box {
+    background:rgba(255,255,255,0.97);
+    border-radius:12px;
+    padding:16px;
+    margin:16px 0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .diagram-box svg { max-width:100%; height:auto; }
+  .diagram-box canvas { max-width:100%; }
+
+  /* OPTIONS */
+  .options-list { list-style:none; display:flex; flex-direction:column; gap:10px; margin-top:20px; }
+  .option-item {
+    background:rgba(255,255,255,0.04);
+    border:1.5px solid rgba(255,255,255,0.1);
+    border-radius:12px;
+    padding:14px 20px;
+    cursor:pointer;
+    display:flex; align-items:flex-start; gap:14px;
+    transition:all .2s;
+    position:relative;
+  }
+  .option-item:hover:not(.disabled) {
+    border-color:rgba(232,160,32,0.4);
+    background:rgba(232,160,32,0.06);
+  }
+  .option-item.selected {
+    border-color:var(--gold);
+    background:rgba(232,160,32,0.12);
+  }
+  .option-item.correct {
+    border-color:var(--correct-border);
+    background:rgba(34,197,94,0.1);
+  }
+  .option-item.wrong {
+    border-color:var(--wrong-border);
+    background:rgba(239,68,68,0.1);
+  }
+  .option-item.disabled { cursor:default; }
+  .option-letter {
+    width:28px; height:28px;
+    border-radius:8px;
+    background:rgba(255,255,255,0.08);
+    border:1px solid rgba(255,255,255,0.15);
+    display:flex; align-items:center; justify-content:center;
+    font-size:13px;
+    font-weight:600;
+    flex-shrink:0;
+    transition:all .2s;
+  }
+  .option-item.selected .option-letter { background:var(--gold); color:var(--navy); border-color:var(--gold); }
+  .option-item.correct .option-letter { background:var(--correct-border); color:white; border-color:var(--correct-border); }
+  .option-item.wrong .option-letter { background:var(--wrong-border); color:white; border-color:var(--wrong-border); }
+  .option-text { font-size:14px; line-height:1.6; padding-top:2px; }
+
+  /* ESSAY INPUT */
+  .essay-input {
+    width:100%;
+    background:rgba(255,255,255,0.05);
+    border:1.5px solid rgba(255,255,255,0.12);
+    border-radius:12px;
+    padding:16px;
+    color:var(--white);
+    font-family:'DM Sans', sans-serif;
+    font-size:14px;
+    line-height:1.7;
+    resize:vertical;
+    min-height:120px;
+    outline:none;
+    transition:all .2s;
+    margin-top:16px;
+  }
+  .essay-input:focus {
+    border-color:var(--gold);
+    background:rgba(232,160,32,0.05);
+  }
+  .essay-hint { font-size:12px; color:rgba(255,255,255,0.35); margin-top:8px; font-style:italic; }
+
+  /* NAV BUTTONS */
+  .nav-buttons {
+    display:flex; justify-content:space-between; align-items:center;
+    margin-top:20px;
+    gap:12px;
+  }
+  .btn {
+    padding:12px 28px;
+    border-radius:10px;
+    font-family:'DM Sans', sans-serif;
+    font-size:14px;
+    font-weight:500;
+    cursor:pointer;
+    border:none;
+    transition:all .2s;
+    letter-spacing:.5px;
+  }
+  .btn-ghost {
+    background:rgba(255,255,255,0.08);
+    color:rgba(255,255,255,0.7);
+    border:1px solid rgba(255,255,255,0.15);
+  }
+  .btn-ghost:hover { background:rgba(255,255,255,0.12); color:white; }
+  .btn-primary {
+    background:linear-gradient(135deg, var(--gold), var(--gold-light));
+    color:var(--navy);
+    font-weight:600;
+    box-shadow:0 4px 15px rgba(232,160,32,0.3);
+  }
+  .btn-primary:hover { transform:translateY(-1px); box-shadow:0 6px 20px rgba(232,160,32,0.4); }
+  .btn-danger {
+    background:linear-gradient(135deg, #dc2626, #ef4444);
+    color:white;
+    box-shadow:0 4px 15px rgba(220,38,38,0.3);
+  }
+  .btn-danger:hover { transform:translateY(-1px); }
+  .btn:disabled { opacity:.4; cursor:not-allowed; transform:none !important; }
+
+  /* RESULT SCREEN */
+  .result-wrap {
+    max-width:800px;
+    margin:0 auto;
+    padding:40px 20px 80px;
+    position:relative; z-index:1;
+  }
+  .result-hero {
+    text-align:center;
+    margin-bottom:40px;
+  }
+  .score-ring {
+    width:160px; height:160px;
+    margin:0 auto 24px;
+    position:relative;
+  }
+  .score-ring svg { transform:rotate(-90deg); }
+  .score-ring .score-num {
+    position:absolute; inset:0;
+    display:flex; flex-direction:column;
+    align-items:center; justify-content:center;
+  }
+  .score-ring .score-num .num {
+    font-family:'Playfair Display', serif;
+    font-size:42px;
+    font-weight:900;
+    color:var(--gold-light);
+    line-height:1;
+  }
+  .score-ring .score-num .label { font-size:11px; color:rgba(255,255,255,0.4); letter-spacing:2px; }
+  .result-hero h2 {
+    font-family:'Playfair Display', serif;
+    font-size:28px;
+    margin-bottom:8px;
+  }
+  .result-hero .grade-badge {
+    display:inline-block;
+    padding:6px 20px;
+    border-radius:999px;
+    font-size:14px;
+    font-weight:600;
+    margin-bottom:12px;
+  }
+  .result-hero .feedback-text {
+    color:rgba(255,255,255,0.6);
+    font-size:15px;
+    line-height:1.7;
+    max-width:500px;
+    margin:0 auto;
+  }
+
+  .result-stats {
+    display:grid; grid-template-columns:repeat(3,1fr); gap:16px;
+    margin-bottom:32px;
+  }
+  .stat-card {
+    background:linear-gradient(145deg, var(--navy-mid), var(--navy-light));
+    border:1px solid rgba(255,255,255,0.08);
+    border-radius:16px;
+    padding:20px;
+    text-align:center;
+  }
+  .stat-card .stat-val {
+    font-family:'Playfair Display', serif;
+    font-size:32px;
+    font-weight:700;
+    line-height:1;
+    margin-bottom:4px;
+  }
+  .stat-card .stat-label { font-size:12px; color:rgba(255,255,255,0.4); letter-spacing:1px; text-transform:uppercase; }
+
+  .review-section { margin-bottom:32px; }
+  .review-section h3 {
+    font-family:'Playfair Display', serif;
+    font-size:20px;
+    margin-bottom:16px;
+    color:var(--gold-light);
+  }
+  .review-item {
+    background:linear-gradient(145deg, var(--navy-mid), var(--navy-light));
+    border:1px solid rgba(255,255,255,0.08);
+    border-radius:16px;
+    padding:20px;
+    margin-bottom:12px;
+  }
+  .review-item.correct-r { border-left:3px solid var(--correct-border); }
+  .review-item.wrong-r { border-left:3px solid var(--wrong-border); }
+  .review-item .review-q { font-size:14px; margin-bottom:10px; color:rgba(255,255,255,0.85); }
+  .review-item .review-ans { font-size:13px; margin-top:6px; }
+  .review-item .correct-ans { color:var(--green); }
+  .review-item .wrong-ans { color:var(--red); }
+  .review-item .explanation {
+    background:rgba(255,255,255,0.05);
+    border-radius:8px;
+    padding:12px;
+    margin-top:10px;
+    font-size:13px;
+    color:rgba(255,255,255,0.6);
+    line-height:1.6;
+  }
+
+  .btn-restart {
+    display:block;
+    width:100%;
+    background:linear-gradient(135deg, var(--gold), var(--gold-light));
+    color:var(--navy);
+    border:none;
+    border-radius:12px;
+    padding:16px;
+    font-family:'DM Sans', sans-serif;
+    font-size:16px;
+    font-weight:600;
+    cursor:pointer;
+    transition:all .2s;
+    box-shadow:0 4px 20px rgba(232,160,32,0.4);
+    margin-top:24px;
+  }
+  .btn-restart:hover { transform:translateY(-2px); }
+
+  /* Popup */
+  .popup-overlay {
+    display:none;
+    position:fixed; inset:0;
+    background:rgba(0,0,0,0.7);
+    z-index:1000;
+    align-items:center; justify-content:center;
+  }
+  .popup-overlay.show { display:flex; }
+  .popup-box {
+    background:var(--navy-mid);
+    border:1px solid rgba(232,160,32,0.3);
+    border-radius:20px;
+    padding:36px;
+    max-width:420px;
+    width:90%;
+    text-align:center;
+  }
+  .popup-box h3 { font-family:'Playfair Display', serif; font-size:22px; margin-bottom:12px; }
+  .popup-box p { color:rgba(255,255,255,0.6); margin-bottom:24px; font-size:15px; }
+  .popup-buttons { display:flex; gap:12px; }
+  .popup-buttons .btn { flex:1; }
+
+  /* Section divider */
+  .section-divider {
+    text-align:center;
+    margin:32px 0 20px;
+    position:relative;
+  }
+  .section-divider::before {
+    content:'';
+    position:absolute;
+    top:50%; left:0; right:0;
+    height:1px;
+    background:rgba(255,255,255,0.1);
+  }
+  .section-divider span {
+    position:relative;
+    background:var(--navy);
+    padding:0 16px;
+    font-size:12px;
+    letter-spacing:3px;
+    text-transform:uppercase;
+    color:rgba(255,255,255,0.3);
+  }
+
+  /* Canvas chart */
+  .chart-container { position:relative; margin:16px 0; }
+
+  @media(max-width:600px){
+    .welcome-card { padding:28px 20px; }
+    .info-grid { grid-template-columns:1fr; }
+    .result-stats { grid-template-columns:1fr 1fr; }
+    .header { padding:12px 16px; }
+    .timer-value { font-size:20px; }
+    .exam-wrap { padding:20px 12px 60px; }
+    .question-card { padding:20px; }
+    .q-nav-dots { max-width:200px; }
+    .q-dot { width:8px; height:8px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Watermark -->
+<div class="watermark"></div>
+<div class="watermark-2" id="wmGrid"></div>
+
+<!-- Header (shown during exam) -->
+<div class="header" id="examHeader" style="display:none">
+  <div class="header-logo">
+    <div class="header-emblem">🏆</div>
+    <div class="header-title">
+      <h1>OSN SEMIFINAL 2025</h1>
+      <p>Computer Based Test</p>
+    </div>
+  </div>
+  <div class="timer-box">
+    <div class="timer-label">Sisa Waktu</div>
+    <div class="timer-value" id="timerDisplay">60:00</div>
+  </div>
+</div>
+
+<!-- Screen 1: Welcome / Registration -->
+<div class="screen active" id="screenWelcome">
+  <div class="welcome-wrap">
+    <div class="welcome-card">
+      <div class="welcome-badge">🔬 Olimpiade Sains Nasional</div>
+      <h2>CBT <span>Semifinal</span><br>OSN 2025</h2>
+      <p class="subtitle">Isilah data diri Anda dengan benar sebelum memulai ujian. Pastikan nama dan kelas terisi dengan tepat.</p>
+
+      <div class="info-grid">
+        <div class="info-item">
+          <span class="icon">⏱️</span>
+          <div class="info-text">
+            <div class="label">Durasi</div>
+            <div class="value">60 Menit</div>
+          </div>
+        </div>
+        <div class="info-item">
+          <span class="icon">📋</span>
+          <div class="info-text">
+            <div class="label">Tingkat</div>
+            <div class="value">Semifinal</div>
+          </div>
+        </div>
+        <div class="info-item">
+          <span class="icon">📚</span>
+          <div class="info-text">
+            <div class="label">Bidang</div>
+            <div class="value">Ekonomi, Fisika, Kebumian</div>
+          </div>
+        </div>
+        <div class="info-item">
+          <span class="icon">🎯</span>
+          <div class="info-text">
+            <div class="label">Jumlah Soal</div>
+            <div class="value">30 Soal</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Nama Lengkap</label>
+        <input type="text" class="form-control" id="inputNama" placeholder="Masukkan nama lengkap Anda" autocomplete="off">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Kelas</label>
+        <select class="form-control" id="inputKelas">
+          <option value="">-- Pilih Kelas --</option>
+          <option value="X">X (Sepuluh)</option>
+          <option value="XI">XI (Sebelas)</option>
+          <option value="XII">XII (Dua Belas)</option>
+        </select>
+      </div>
+
+      <button class="btn-start" id="btnStart" onclick="startSubjectSelect()" disabled>
+        Lanjut ke Pilih Bidang Studi →
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Screen 2: Subject Selection -->
+<div class="screen" id="screenSubject">
+  <div class="subject-wrap">
+    <div class="subject-card">
+      <h2>Pilih Bidang Studi</h2>
+      <p>Pilih salah satu bidang yang akan Anda ujikan hari ini</p>
+
+      <div class="subject-grid">
+        <div class="subject-option" onclick="selectSubject('ekonomi', this)">
+          <div class="subject-icon" style="background:rgba(34,197,94,0.15)">📈</div>
+          <div class="subject-info">
+            <h3>Ekonomi</h3>
+            <p>Analisis makro ekonomi, kebijakan fiskal, dan perencanaan keuangan</p>
+          </div>
+          <div class="subject-check" id="check-ekonomi">✓</div>
+        </div>
+        <div class="subject-option" onclick="selectSubject('fisika', this)">
+          <div class="subject-icon" style="background:rgba(59,130,246,0.15)">🪐</div>
+          <div class="subject-info">
+            <h3>Fisika</h3>
+            <p>Analisis wahana antariksa, gravitasi, dan mekanika benda tegar</p>
+          </div>
+          <div class="subject-check" id="check-fisika">✓</div>
+        </div>
+        <div class="subject-option" onclick="selectSubject('kebumian', this)">
+          <div class="subject-icon" style="background:rgba(232,160,32,0.15)">🌍</div>
+          <div class="subject-info">
+            <h3>Kebumian</h3>
+            <p>Analisis data meteorologi, vulkanologi, dan astronomi</p>
+          </div>
+          <div class="subject-check" id="check-kebumian">✓</div>
+        </div>
+      </div>
+
+      <button class="btn btn-primary" id="btnStartExam" onclick="startExam()" disabled style="width:100%; padding:16px; font-size:16px;">
+        Mulai Ujian →
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Screen 3: Exam -->
+<div class="screen" id="screenExam">
+  <div class="exam-wrap">
+    <div class="exam-progress-bar">
+      <div class="exam-progress-fill" id="progressFill"></div>
+    </div>
+
+    <div class="question-header">
+      <div class="q-badge" id="questionBadge">Soal 1 dari 30</div>
+      <div class="q-nav-dots" id="navDots"></div>
+    </div>
+
+    <div class="question-card" id="questionCard">
+      <!-- Dynamic content -->
+    </div>
+
+    <div class="nav-buttons">
+      <button class="btn btn-ghost" id="btnPrev" onclick="prevQuestion()">← Sebelumnya</button>
+      <button class="btn btn-danger" onclick="showSubmitPopup()">Selesai & Kirim</button>
+      <button class="btn btn-primary" id="btnNext" onclick="nextQuestion()">Berikutnya →</button>
+    </div>
+  </div>
+</div>
+
+<!-- Screen 4: Results -->
+<div class="screen" id="screenResult">
+  <div class="result-wrap" id="resultContent"></div>
+</div>
+
+<!-- Submit Popup -->
+<div class="popup-overlay" id="submitPopup">
+  <div class="popup-box">
+    <h3>⚠️ Konfirmasi Pengiriman</h3>
+    <p id="popupMsg">Apakah Anda yakin ingin mengakhiri ujian dan mengirim jawaban?</p>
+    <div class="popup-buttons">
+      <button class="btn btn-ghost" onclick="closePopup()">Batal</button>
+      <button class="btn btn-primary" onclick="submitExam()">Ya, Kirim Jawaban</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== WATERMARK GENERATOR =====
+const wm = document.getElementById('wmGrid');
+for(let i=0; i<50; i++){
+  const s = document.createElement('span');
+  s.textContent = 'Siti Sundari';
+  wm.appendChild(s);
+}
+
+// ===== QUESTION BANKS =====
+const questionBanks = {
+  ekonomi: [
+    {
+      id:'e1', type:'mc',
+      subject:'Ekonomi', subjectColor:'#22c55e',
+      text:'Negara "Harmoni Nusa" memiliki data ekonomi tahun 2023 sebagai berikut: Konsumsi (C) = Rp7.500 T, Investasi (I) = Rp2.500 T, Pengeluaran Pemerintah (G) = Rp2.000 T, Ekspor (X) = Rp1.800 T, Impor (M) = Rp1.300 T. Berapa nilai Produk Domestik Bruto (PDB) menggunakan pendekatan pengeluaran?',
+      stimulus:`<strong>Data Ekonomi Harmoni Nusa 2023:</strong><br>
+        • C (Konsumsi): Rp7.500 triliun<br>
+        • I (Investasi): Rp2.500 triliun<br>
+        • G (Pengeluaran Pemerintah): Rp2.000 triliun<br>
+        • X (Ekspor): Rp1.800 triliun<br>
+        • M (Impor): Rp1.300 triliun`,
+      formula:'PDB = C + I + G + (X - M)',
+      options:['Rp11.500 triliun','Rp12.500 triliun','Rp13.000 triliun','Rp12.000 triliun','Rp13.500 triliun'],
+      correct:1,
+      explanation:'PDB = 7.500 + 2.500 + 2.000 + (1.800 − 1.300) = 7.500 + 2.500 + 2.000 + 500 = <strong>Rp12.500 triliun</strong>.'
+    },
+    {
+      id:'e2', type:'mc',
+      subject:'Ekonomi', subjectColor:'#22c55e',
+      text:'Berdasarkan data Harmoni Nusa, diketahui Pendapatan Netto Faktor dari Luar Negeri = −Rp200 T. Berapakah Produk Nasional Bruto (PNB)?',
+      formula:'PNB = PDB + Pendapatan Netto Faktor LN',
+      options:['Rp12.700 triliun','Rp12.300 triliun','Rp12.100 triliun','Rp12.500 triliun','Rp12.900 triliun'],
+      correct:1,
+      explanation:'PNB = PDB + Pendapatan Netto Faktor LN = 12.500 + (−200) = <strong>Rp12.300 triliun</strong>.'
+    },
+    {
+      id:'e3', type:'mc',
+      subject:'Ekonomi', subjectColor:'#22c55e',
+      text:'Dari PNB Harmoni Nusa, diketahui Penyusutan = Rp600 T, Pajak Tidak Langsung = Rp400 T, dan Subsidi = Rp150 T. Berapakah Pendapatan Nasional (NI)?',
+      formula:'NNP = PNB - Penyusutan; NI = NNP - Pajak Tidak Langsung + Subsidi',
+      options:['Rp11.450 triliun','Rp11.650 triliun','Rp11.250 triliun','Rp11.850 triliun','Rp12.000 triliun'],
+      correct:0,
+      explanation:'NNP = 12.300 − 600 = 11.700 T. NI = 11.700 − 400 + 150 = <strong>Rp11.450 triliun</strong>.'
+    },
+    {
+      id:'e4', type:'mc',
+      subject:'Ekonomi', subjectColor:'#22c55e',
+      text:'Distribusi PNB Harmoni Nusa: 20% termiskin = 6%, 20% menengah bawah = 11%, 20% menengah = 16%, 20% menengah atas = 24%, 20% terkaya = 43%. Setelah kebijakan "Program Keadilan Ekonomi 2024" (transfer Rp100T ke termiskin, pajak tambahan Rp100T dari terkaya), berapa pendapatan kelompok 20% termiskin sesudah kebijakan?',
+      stimulus:`<strong>Program Keadilan Ekonomi 2024:</strong><br>
+        1. Transfer Tunai Bersyarat untuk 20% termiskin: +Rp100 T<br>
+        2. Pajak tambahan untuk 20% terkaya: −Rp100 T<br>
+        <em>PNB = Rp12.300 T (tetap)</em>`,
+      options:['Rp638 triliun','Rp738 triliun','Rp838 triliun','Rp938 triliun','Rp1.038 triliun'],
+      correct:2,
+      explanation:'Pendapatan sebelum = 6% × 12.300 = Rp738 T. Sesudah kebijakan: 738 + 100 = <strong>Rp838 triliun</strong>.'
+    },
+    {
+      id:'e5', type:'mc',
+      subject:'Ekonomi', subjectColor:'#22c55e',
+      text:'PT. Agrikultur Jaya adalah price taker dengan fungsi biaya TC = 200.000 + 4.000Q + 20Q². Harga pasar gandum Rp10.000/kg. Berapa kuantitas output yang memaksimalkan keuntungan?',
+      formula:'Kondisi maksimalisasi: MR = MC → P = MC → 10.000 = 4.000 + 40Q',
+      options:['100 kg','125 kg','150 kg','175 kg','200 kg'],
+      correct:2,
+      explanation:'MC = dTC/dQ = 4.000 + 40Q. Untuk persaingan sempurna: MR = P = 10.000. Maka 10.000 = 4.000 + 40Q → 40Q = 6.000 → Q = <strong>150 kg</strong>.'
+    },
+    {
+      id:'e6', type:'mc',
+      subject:'Ekonomi', subjectColor:'#22c55e',
+      text:'PT. Kopi Nikmat (persaingan monopolistik) memiliki fungsi permintaan P = 100.000 − 1.000Q dan TC = 50.000 + 10.000Q + 500Q². Berapa harga jual optimal (P*)?',
+      formula:'MR = MC → 100.000 − 2.000Q = 10.000 + 1.000Q',
+      options:['Rp50.000','Rp60.000','Rp70.000','Rp80.000','Rp90.000'],
+      correct:2,
+      explanation:'MR = 100.000 − 2.000Q; MC = 10.000 + 1.000Q. MR=MC → 90.000 = 3.000Q → Q=30. P = 100.000 − 1.000×30 = <strong>Rp70.000</strong>.'
+    },
+    {
+      id:'e7', type:'mc',
+      subject:'Ekonomi', subjectColor:'#22c55e',
+      text:'Pak Toni (gaji Rp8 juta) dan Ibu Lia (gaji Rp6 juta). Pengeluaran tetap bulanan: KPR Rp4 juta, utilitas Rp1 juta, transportasi Rp800 ribu, bahan pokok Rp2,5 juta, penitipan anak Rp1,2 juta. Pengeluaran variabel: hiburan Rp1,5 juta, pakaian Rp700 ribu. Berapa sisa kas bulanan?',
+      stimulus:`<strong>Pendapatan total:</strong> Rp14.000.000/bulan<br>
+        <strong>Pengeluaran tetap:</strong> KPR + Utilitas + Transport + Pokok + Penitipan<br>
+        <strong>Pengeluaran variabel:</strong> Hiburan + Pakaian`,
+      options:['Rp1.300.000','Rp2.300.000','Rp3.200.000','Rp1.800.000','Rp2.800.000'],
+      correct:1,
+      explanation:'Total tetap = 4+1+0,8+2,5+1,2 = Rp9,5 juta. Total variabel = 1,5+0,7 = Rp2,2 juta. Total pengeluaran = Rp11,7 juta. Sisa = 14 − 11,7 = <strong>Rp2.300.000</strong>.'
+    },
+    {
+      id:'e8', type:'mc',
+      subject:'Ekonomi', subjectColor:'#22c55e',
+      text:'Keluarga Pak Toni membutuhkan dana darurat setara 6× pengeluaran bulanan. Dengan tabungan awal Rp15 juta dan sisihkan seluruh sisa kas bulanan Rp2,3 juta, berapa bulan mencapai target?',
+      stimulus:'Total pengeluaran bulanan = Rp11.700.000. Dana darurat = 6 × Rp11.700.000 = Rp70.200.000',
+      options:['18 bulan','20 bulan','24 bulan','30 bulan','36 bulan'],
+      correct:2,
+      explanation:'Target = 6 × 11.700.000 = Rp70.200.000. Kekurangan = 70.200.000 − 15.000.000 = Rp55.200.000. Bulan = 55.200.000 ÷ 2.300.000 = <strong>24 bulan</strong>.'
+    },
+    {
+      id:'e9', type:'mc',
+      subject:'Ekonomi', subjectColor:'#22c55e',
+      text:'Anak Pak Toni berusia 2 tahun. Biaya masuk SMP saat ini Rp40 juta (11 tahun lagi). Dengan inflasi 4%/tahun, berapa estimasi biaya masuk SMP saat anak usia 13 tahun?',
+      formula:'FV = PV × (1 + r)^n = 40.000.000 × (1,04)^11',
+      options:['Rp55.178.000','Rp61.578.000','Rp67.234.000','Rp48.432.000','Rp72.000.000'],
+      correct:1,
+      explanation:'FV = 40.000.000 × (1,04)^11 = 40.000.000 × 1,53945 ≈ <strong>Rp61.578.000</strong>.'
+    },
+    {
+      id:'e10', type:'mc',
+      subject:'Ekonomi', subjectColor:'#22c55e',
+      text:'PT. Listrik Negara (monopoli alami) menghadapi permintaan P = 1.000.000 − 100Q dan TC = 10.000.000 + 5.000Q + 25Q². Berapa kuantitas produksi optimal?',
+      formula:'MR = 1.000.000 - 200Q; MC = 5.000 + 50Q; MR = MC',
+      options:['3.800 unit','3.900 unit','3.980 unit','4.100 unit','4.200 unit'],
+      correct:2,
+      explanation:'MR = 1.000.000 − 200Q; MC = 5.000 + 50Q. MR=MC → 995.000 = 250Q → Q = <strong>3.980 unit</strong>.'
+    }
+  ],
+
+  fisika: [
+    {
+      id:'f1', type:'mc',
+      subject:'Fisika', subjectColor:'#3b82f6',
+      text:'Wahana Galileo Atmospheric Probe masuk ke Jupiter dengan kecepatan v_p dan sudut 30° terhadap arah radial. Sesaat sebelum hancur, sudut yang dibentuk αc = 45°. Pernyataan manakah yang BENAR tentang prinsip yang digunakan untuk menentukan massa jenis Jupiter?',
+      stimulus:'Anggap Jupiter adalah bola gas homogen. Wahana mengirim data telemetri sudut kecepatan terhadap arah radial.',
+      options:[
+        'Hanya menggunakan Hukum Kekekalan Energi',
+        'Menggunakan Hukum Kekekalan Momentum Sudut dan Kekekalan Energi',
+        'Hanya menggunakan Hukum Newton tentang gravitasi',
+        'Menggunakan Hukum Kepler dan Kekekalan Energi',
+        'Hanya menggunakan persamaan energi potensial gravitasi'
+      ],
+      correct:1,
+      explanation:'Untuk menentukan massa jenis Jupiter, digunakan dua prinsip: (1) <strong>Kekekalan Momentum Sudut</strong> (L = mv_p sin30° R = mv_H sin45° (R−d)) dan (2) <strong>Kekekalan Energi Mekanik</strong> dari permukaan hingga titik hancur.'
+    },
+    {
+      id:'f2', type:'mc',
+      subject:'Fisika', subjectColor:'#3b82f6',
+      text:'Di dalam Jupiter (bola homogen massa jenis ρ, jari-jari R), energi potensial gravitasi wahana bermassa m pada jarak r dari pusat adalah:',
+      formula:'EP di dalam bola homogen = ?',
+      options:[
+        'EP = −(2/3)πGρm(3R² + r²)',
+        'EP = −(2/3)πGρm(3R² − r²)',
+        'EP = −GMm/r',
+        'EP = −(4/3)πGρm·r²',
+        'EP = −(2/3)πGρmR²'
+      ],
+      correct:1,
+      explanation:'Mengintegrasikan gaya gravitasi dari ∞ ke r (melewati permukaan R): EP = −(GMm/R) + (2/3)πGρm(r²−R²) = <strong>−(2/3)πGρm(3R²−r²)</strong>.'
+    },
+    {
+      id:'f3', type:'mc',
+      subject:'Fisika', subjectColor:'#3b82f6',
+      text:'Wahana Juno menemukan Jupiter memiliki inti padat jari-jari R_s dengan ρ = ρ_s, dan lapisan gas dengan distribusi ρ = ρ_g(1 − r/R). Untuk R_s = R/2, medan gravitasi di luar Jupiter (r ≥ R) adalah:',
+      diagram: 'jupiter',
+      options:[
+        'g = −GπR³(8ρ_s + 11ρ_g)/(48r²)',
+        'g = −GπR³(4ρ_s + 8ρ_g)/(12r²)',
+        'g = −4πGρ_s r/3',
+        'g = −GM_total/r²',
+        'g = −GπR³(ρ_s + ρ_g)/(r²)'
+      ],
+      correct:0,
+      explanation:'Dengan R_s = R/2, massa total M = (1/6)πρ_sR³ + (11/48)πρ_gR³. Medan gravitasi: <strong>g = −GπR³(8ρ_s + 11ρ_g)/(48r²)</strong>.'
+    },
+    {
+      id:'f4', type:'mc',
+      subject:'Fisika', subjectColor:'#3b82f6',
+      text:'Batang tipis AB (massa m₁, panjang L) tergantung pada poros licin di A. Peluru m₂ bergerak horizontal v₀ menumbuk batang dan bersarang. Gaya horizontal poros = 0 sesaat setelah tumbukan. Pada jarak berapa dari A peluru menumbuk batang?',
+      diagram: 'batang',
+      options:[
+        'd = L/2',
+        'd = L/3',
+        'd = 2L/3',
+        'd = 3L/4',
+        'd = L/4'
+      ],
+      correct:2,
+      explanation:'Dari persamaan torka I_O·α = Fd, percepatan pusat massa a_x = αL/2 = 3Fd/(2m₁L). Persamaan gerak: F − F_x = m₁·a_x. Jika F_x = 0: F = m₁·a_x = 3Fd/(2L) → d = <strong>2L/3</strong>.'
+    },
+    {
+      id:'f5', type:'mc',
+      subject:'Fisika', subjectColor:'#3b82f6',
+      text:'Pada soal batang-peluru, menggunakan kekekalan momentum angular saat tumbukan, kecepatan sudut sistem ω₀ sesaat setelah tumbukan bergantung pada:',
+      options:[
+        'Hanya momentum linier peluru',
+        'Momentum sudut peluru terhadap titik A dan momen inersia sistem terhadap A',
+        'Hanya massa batang dan peluru',
+        'Kecepatan pusat massa sistem',
+        'Hanya momen inersia batang'
+      ],
+      correct:1,
+      explanation:'L_sebelum = m₂v₀d (momentum sudut peluru thd A). L_sesudah = I_A·ω₀ (momen inersia total). Kekal: ω₀ = m₂v₀d / I_A. Keduanya diperlukan: <strong>momentum sudut peluru terhadap A dan momen inersia sistem</strong>.'
+    },
+    {
+      id:'f6', type:'mc',
+      subject:'Fisika', subjectColor:'#3b82f6',
+      text:'Di dalam inti padat Jupiter (0 ≤ r ≤ R_s, massa jenis seragam ρ_s), medan gravitasi sebagai fungsi r adalah:',
+      formula:'Gunakan teorema kulit Gauss untuk gravitasi',
+      options:[
+        'g_s = −(4/3)πGρ_s r',
+        'g_s = −GM/r²',
+        'g_s = konstan',
+        'g_s = −(2/3)πGρ_s r',
+        'g_s = 0'
+      ],
+      correct:0,
+      explanation:'Dalam inti seragam, massa yang berkontribusi = ρ_s·(4/3)πr³. Medan gravitasi: g = −G·M_enc/r² = <strong>−(4/3)πGρ_s·r</strong> (linear terhadap r).'
+    },
+    {
+      id:'f7', type:'mc',
+      subject:'Fisika', subjectColor:'#3b82f6',
+      text:'Sistem batang+peluru terlepas dari poros saat titik B di posisi tertinggi dengan kecepatan sudut ω₁. Setelah lepas, gerak sistem adalah:',
+      options:[
+        'Hanya translasi horizontal',
+        'Hanya rotasi di tempat',
+        'Gerak parabola pusat massa + rotasi di sekitar pusat massa',
+        'Gerak lingkaran dengan radius L',
+        'Diam sesaat kemudian jatuh bebas'
+      ],
+      correct:2,
+      explanation:'Setelah lepas dari poros, tidak ada gaya luar selain gravitasi. Pusat massa bergerak <strong>parabola</strong>, sementara sistem berotasi di sekitar pusat massa dengan ω₁ yang konstan.'
+    },
+    {
+      id:'f8', type:'mc',
+      subject:'Fisika', subjectColor:'#3b82f6',
+      text:'Pada problem tangki air (volume V, massa jenis air ρ_w) yang mengandung benda kecil (volume v, massa jenis ρ_m < ρ_w). Percepatan ke atas benda kecil adalah:',
+      diagram: 'tangki',
+      formula:'F_net = F_apung − F_gravitasi = ρ_w·v·g − ρ_m·v·g',
+      options:[
+        'a = (ρ_w/ρ_m − 1)g ke atas',
+        'a = (ρ_m/ρ_w − 1)g ke atas',
+        'a = g ke atas',
+        'a = (ρ_w − ρ_m)g ke atas',
+        'a = 0'
+      ],
+      correct:0,
+      explanation:'F_net = (ρ_w − ρ_m)·v·g ke atas. m_benda = ρ_m·v. a = F_net/m = (ρ_w−ρ_m)·v·g/(ρ_m·v) = <strong>(ρ_w/ρ_m − 1)·g</strong> ke atas.'
+    },
+    {
+      id:'f9', type:'mc',
+      subject:'Fisika', subjectColor:'#3b82f6',
+      text:'Massa total planet Jupiter (inti padat ρ_s jari-jari R_s, dan lapisan gas ρ_g(1−r/R) dari R_s hingga R) adalah:',
+      options:[
+        'M = (4/3)πρ_sR_s³ + (4/3)πρ_g(R³/12 − R_s³/3 + R_s⁴/(4R))',
+        'M = (4/3)π(ρ_s + ρ_g)R³',
+        'M = (4/3)πρ_s R_s³',
+        'M = 4πρ_g(R³/3 − R_s³/3)',
+        'M = πρ_g R³ + πρ_s R_s³'
+      ],
+      correct:0,
+      explanation:'M = m_inti + m_gas. m_inti = (4/3)πρ_sR_s³. m_gas = 4πρ_g[(R³/3−R⁴/(4R)) − (R_s³/3−R_s⁴/(4R))] = <strong>4πρ_g(R³/12 − R_s³/3 + R_s⁴/(4R))</strong>.'
+    },
+    {
+      id:'f10', type:'mc',
+      subject:'Fisika', subjectColor:'#3b82f6',
+      text:'Saat benda kecil bergerak ke atas dalam tangki air, percepatan pusat massa sistem keseluruhan (air + benda kecil + toren) adalah:',
+      options:[
+        'Nol, karena sistem tertutup',
+        'Ke atas, sesuai hukum Newton III',
+        'Ke bawah, karena massa air berpindah ke bawah',
+        'Sama dengan percepatan benda kecil',
+        'Tergantung massa toren saja'
+      ],
+      correct:0,
+      explanation:'Jika massa toren diabaikan, satu-satunya gaya luar adalah gaya normal meja dan gravitasi. Karena total gaya eksternal pada sistem (dalam arah vertikal) = N − (m_air+m_benda)g = 0 (sistem di atas meja stabil), percepatan pusat massa = <strong>nol</strong>.'
+    }
+  ],
+
+  kebumian: [
+    {
+      id:'k1', type:'mc',
+      subject:'Kebumian', subjectColor:'#e8a020',
+      text:'Pada penelitian Paleo-temperatur Gunung Api Lewotobi Perempuan, sampel arang C6 memiliki nilai Reflektansi Vitrinite (Ro) = 1,5%. Menggunakan kurva kalibrasi T(°C) = 120 × ln(Ro) + 360, berapakah paleo-temperatur sampel C6?',
+      diagram:'rovst',
+      stimulus:`<strong>Tabel 3. Data Sampel dan Ro:</strong>
+        <table><tr><th>Sampel</th><th>Umur (BP)</th><th>Ro (%)</th></tr>
+        <tr><td>C1</td><td>1.230</td><td>0,6</td></tr>
+        <tr><td>C2</td><td>3.100</td><td>0,7</td></tr>
+        <tr><td>C3</td><td>850</td><td>0,8</td></tr>
+        <tr><td>C4</td><td>2.450</td><td>1,0</td></tr>
+        <tr><td>C5</td><td>4.550</td><td>1,1</td></tr>
+        <tr><td>C6</td><td>2.100</td><td>1,5</td></tr>
+        <tr><td>C7</td><td>1.940</td><td>1,2</td></tr></table>`,
+      formula:'T(°C) = 120 × ln(Ro) + 360',
+      options:['~305°C','~360°C','~409°C','~440°C','~350°C'],
+      correct:2,
+      explanation:'T = 120 × ln(1,5) + 360 = 120 × 0,405 + 360 = 48,6 + 360 ≈ <strong>409°C</strong>.'
+    },
+    {
+      id:'k2', type:'mc',
+      subject:'Kebumian', subjectColor:'#e8a020',
+      text:'Berdasarkan Tabel 3, jika sampel diurutkan dari termuda ke tertua berdasarkan umur BP, urutan yang benar adalah:',
+      stimulus:`Ingat: BP = Before Present. Semakin kecil umur BP, semakin muda.<br>
+        C1=1.230, C2=3.100, C3=850, C4=2.450, C5=4.550, C6=2.100, C7=1.940`,
+      options:[
+        'C3 → C1 → C7 → C6 → C4 → C2 → C5',
+        'C5 → C2 → C4 → C6 → C7 → C1 → C3',
+        'C1 → C3 → C7 → C2 → C4 → C6 → C5',
+        'C3 → C7 → C1 → C2 → C4 → C6 → C5',
+        'C5 → C4 → C6 → C2 → C7 → C1 → C3'
+      ],
+      correct:0,
+      explanation:'Urutkan umur BP terkecil (termuda) ke terbesar (tertua): C3(850) → C1(1.230) → C7(1.940) → C6(2.100) → C4(2.450) → C2(3.100) → C5(4.550). Jawaban: <strong>C3→C1→C7→C6→C4→C2→C5</strong>.'
+    },
+    {
+      id:'k3', type:'mc',
+      subject:'Kebumian', subjectColor:'#e8a020',
+      text:'Dari data meteorologi Stasiun Gewayantana, rata-rata TAVG 7 hari sebelum erupsi (30 Jun – 6 Jul 2025) adalah:',
+      stimulus:`<strong>Data TAVG (°C) — periode 30 Jun – 6 Jul:</strong><br>
+        30/6: 28,4 | 1/7: 28,4 | 2/7: 27,6 | 3/7: 28,4 | 4/7: 28,8 | 5/7: 28,9 | 6/7: 27,9`,
+      options:['28,1°C','28,3°C','28,5°C','28,9°C','27,9°C'],
+      correct:1,
+      explanation:'Rata-rata = (28,4+28,4+27,6+28,4+28,8+28,9+27,9) / 7 = 198,4 / 7 ≈ <strong>28,3°C</strong>.'
+    },
+    {
+      id:'k4', type:'mc',
+      subject:'Kebumian', subjectColor:'#e8a020',
+      text:'Rata-rata TAVG 7 hari sesudah erupsi Lewotobi (8–14 Jul 2025) adalah:',
+      stimulus:`<strong>Data TAVG (°C) — periode 8-14 Jul:</strong><br>
+        8/7: 28,1 | 9/7: 27,9 | 10/7: 27,5 | 11/7: 27,8 | 12/7: 28,1 | 13/7: 28,1 | 14/7: 28,6`,
+      options:['27,4°C','27,9°C','28,0°C','28,3°C','28,5°C'],
+      correct:1,
+      explanation:'Rata-rata = (28,1+27,9+27,5+27,8+28,1+28,1+28,6) / 7 = 196,1 / 7 ≈ <strong>27,9°C</strong>. Terjadi penurunan ~0,4°C.'
+    },
+    {
+      id:'k5', type:'mc',
+      subject:'Kebumian', subjectColor:'#e8a020',
+      text:'Erupsi Gunung Lewotobi terjadi pada 7 Juli 2025. Abu vulkanik dan aerosol sulfat yang dilepaskan dapat menurunkan suhu lokal karena:',
+      options:[
+        'Meningkatkan emisi karbon dioksida atmosfer',
+        'Mengurangi radiasi matahari melalui hamburan dan peningkatan albedo',
+        'Menambah uap air di atmosfer secara signifikan',
+        'Meningkatkan tekanan atmosfer secara drastis',
+        'Menyerap panas dari permukaan laut'
+      ],
+      correct:1,
+      explanation:'Abu vulkanik dan aerosol sulfat menghamburkan dan memantulkan radiasi matahari kembali ke angkasa (<strong>peningkatan albedo</strong>), sehingga mengurangi radiasi yang mencapai permukaan dan menurunkan suhu lokal.'
+    },
+    {
+      id:'k6', type:'mc',
+      subject:'Kebumian', subjectColor:'#e8a020',
+      text:'Pada Gambar 3 kurva kalibrasi Ro–T dengan persamaan T = 120×ln(Ro) + 360 yang berlaku untuk domain 0,4 ≤ Ro ≤ 2,0, sampel C1 dengan Ro = 0,6 memiliki paleo-temperatur sekitar:',
+      formula:'T = 120 × ln(0,6) + 360',
+      options:['~295°C','~305°C','~315°C','~325°C','~360°C'],
+      correct:1,
+      explanation:'T = 120 × ln(0,6) + 360 = 120 × (−0,5108) + 360 = −61,3 + 360 ≈ <strong>299°C ≈ ~305°C (mendekati pilihan B)</strong>. T ≈ 299°C, pilihan terdekat adalah ~305°C.'
+    },
+    {
+      id:'k7', type:'mc',
+      subject:'Kebumian', subjectColor:'#e8a020',
+      text:'Berdasarkan data Ro dari sampel termuda ke tertua (C3→C1→C7→C6→C4→C2→C5), paleo-temperatur menunjukkan nilai: C3=0,8%, C1=0,6%, C7=1,2%, C6=1,5%, C4=1,0%, C2=0,7%, C5=1,1%. Bagaimana tren suhu material piroklastik dari masa lalu ke masa kini?',
+      options:[
+        'Terus meningkat secara linear',
+        'Terus menurun secara konsisten',
+        'Berfluktuasi tidak beraturan',
+        'Tinggi di masa lalu, menurun ke masa kini dengan fluktuasi',
+        'Sangat rendah di masa lalu, meningkat drastis ke masa kini'
+      ],
+      correct:3,
+      explanation:'Dari tua ke muda: C5(1,1)→C2(0,7)→C4(1,0)→C6(1,5)→C7(1,2)→C1(0,6)→C3(0,8). Terlihat nilai Ro (dan T) cenderung <strong>tinggi di masa lalu dengan tren menurun ke masa kini</strong>, namun dengan fluktuasi (tidak monoton).'
+    },
+    {
+      id:'k8', type:'mc',
+      subject:'Kebumian', subjectColor:'#e8a020',
+      text:'Teknik penanggalan Radiokarbon (C-14) yang disebutkan dalam konteks Paleo-temperatur Lewotobi digunakan untuk menentukan:',
+      options:[
+        'Suhu erupsi gunung berapi',
+        'Jenis mineral dalam batuan vulkanik',
+        'Umur pembakaran/arang yang tersimpan dalam lapisan sedimen',
+        'Ketebalan lapisan abu vulkanik',
+        'Kecepatan aliran lava'
+      ],
+      correct:2,
+      explanation:'Radiokarbon (C-14) digunakan untuk menentukan <strong>umur pembakaran</strong> — kapan vegetasi terbakar oleh material erupsi, menghasilkan arang yang tersimpan dalam sedimen.'
+    },
+    {
+      id:'k9', type:'mc',
+      subject:'Kebumian', subjectColor:'#e8a020',
+      text:'Data curah hujan (RR) Stasiun Gewayantana pada 6 Juli 2025 (sehari sebelum erupsi) menunjukkan nilai 22,5 mm. Nilai ini dibandingkan periode sekitarnya yang umumnya 0 mm. Apa interpretasi meteorologi paling tepat?',
+      options:[
+        'Hujan lebat ini adalah akibat langsung dari aktivitas vulkanik Lewotobi',
+        'Hujan ini menunjukkan pola normal musiman, tidak terkait erupsi',
+        'Hujan ini menunjukkan front cuaca yang melewati stasiun sebelum erupsi',
+        'Hujan ini disebabkan oleh aerosol sulfat dari erupsi sebelumnya',
+        'Nilai RR 22,5 mm menunjukkan data anomali dan tidak dapat dianalisis'
+      ],
+      correct:2,
+      explanation:'Hujan 22,5 mm terjadi SEBELUM erupsi (6 Juli), sehingga tidak bisa disebabkan erupsi. Ini paling mungkin merupakan <strong>sistem cuaca alami (front atau konveksi lokal)</strong> yang kebetulan terjadi sebelum erupsi.'
+    },
+    {
+      id:'k10', type:'mc',
+      subject:'Kebumian', subjectColor:'#e8a020',
+      text:'Analisis data meteorologi periode 7 hari sebelum vs sesudah erupsi Lewotobi menunjukkan penurunan durasi penyinaran matahari (SS). Hal ini paling konsisten dengan:',
+      options:[
+        'Peningkatan tutupan awan akibat penguapan magma',
+        'Abu vulkanik di atmosfer menghalangi sinar matahari langsung',
+        'Perubahan sudut datang matahari karena musim',
+        'Peningkatan kelembaban tanah pasca-erupsi',
+        'Efek bayangan gunung yang meningkat pasca-erupsi'
+      ],
+      correct:1,
+      explanation:'Penurunan SS (sunshine duration) pasca-erupsi paling konsisten dengan <strong>partikel abu vulkanik di atmosfer yang menghalangi/menghamburkan radiasi matahari langsung</strong>, mengurangi durasi penyinaran efektif.'
+    }
+  ]
+};
+
+// ===== STATE =====
+let state = {
+  nama: '',
+  kelas: '',
+  subject: '',
+  questions: [],
+  answers: {},
+  currentQ: 0,
+  startTime: null,
+  timerInterval: null,
+  timeLeft: 60 * 60, // 60 minutes
+  submitted: false
+};
+
+// ===== FORM VALIDATION =====
+document.getElementById('inputNama').addEventListener('input', validateForm);
+document.getElementById('inputKelas').addEventListener('change', validateForm);
+function validateForm(){
+  const n = document.getElementById('inputNama').value.trim();
+  const k = document.getElementById('inputKelas').value;
+  document.getElementById('btnStart').disabled = !(n.length >= 2 && k);
+}
+
+function startSubjectSelect(){
+  state.nama = document.getElementById('inputNama').value.trim();
+  state.kelas = document.getElementById('inputKelas').value;
+  showScreen('screenSubject');
+}
+
+// ===== SUBJECT SELECT =====
+let selectedSubject = '';
+function selectSubject(subj, el){
+  selectedSubject = subj;
+  document.querySelectorAll('.subject-option').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('btnStartExam').disabled = false;
+}
+
+function startExam(){
+  if(!selectedSubject) return;
+  state.subject = selectedSubject;
+  state.questions = questionBanks[selectedSubject];
+  state.currentQ = 0;
+  state.answers = {};
+  state.timeLeft = 60 * 60;
+  state.submitted = false;
+
+  document.getElementById('examHeader').style.display = 'flex';
+  showScreen('screenExam');
+  renderNavDots();
+  renderQuestion();
+  startTimer();
+}
+
+// ===== TIMER =====
+function startTimer(){
+  updateTimerDisplay();
+  state.timerInterval = setInterval(() => {
+    state.timeLeft--;
+    updateTimerDisplay();
+    if(state.timeLeft <= 0){
+      clearInterval(state.timerInterval);
+      submitExam();
+    }
+    if(state.timeLeft <= 300){
+      document.getElementById('timerDisplay').classList.add('urgent');
+    }
+  }, 1000);
+}
+
+function updateTimerDisplay(){
+  const m = Math.floor(state.timeLeft / 60);
+  const s = state.timeLeft % 60;
+  document.getElementById('timerDisplay').textContent =
+    String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+}
+
+// ===== RENDER =====
+function renderNavDots(){
+  const container = document.getElementById('navDots');
+  container.innerHTML = '';
+  state.questions.forEach((q,i) => {
+    const d = document.createElement('button');
+    d.className = 'q-dot' +
+      (state.answers[q.id] !== undefined ? ' answered' : '') +
+      (i === state.currentQ ? ' current' : '');
+    d.title = `Soal ${i+1}`;
+    d.onclick = () => { state.currentQ = i; renderQuestion(); renderNavDots(); };
+    container.appendChild(d);
+  });
+}
+
+function renderQuestion(){
+  const q = state.questions[state.currentQ];
+  const total = state.questions.length;
+  const answered = Object.keys(state.answers).length;
+
+  document.getElementById('questionBadge').textContent = `Soal ${state.currentQ+1} dari ${total}`;
+  document.getElementById('progressFill').style.width = ((state.currentQ+1)/total*100)+'%';
+  document.getElementById('btnPrev').disabled = state.currentQ === 0;
+  document.getElementById('btnNext').disabled = state.currentQ === total-1;
+  document.getElementById('btnNext').textContent = state.currentQ === total-1 ? 'Terakhir' : 'Berikutnya →';
+
+  let html = `
+    <div class="q-subject-tag">
+      <span class="dot" style="background:${q.subjectColor}"></span>
+      ${q.subject} — Semifinal OSN 2025
+    </div>
+    <div class="question-text">${q.text}</div>
+  `;
+
+  if(q.stimulus){
+    html += `<div class="stimulus-box">${q.stimulus}</div>`;
+  }
+  if(q.formula){
+    html += `<div class="formula-display">📐 ${q.formula}</div>`;
+  }
+  if(q.diagram === 'batang'){
+    html += `<div class="diagram-box">${getBatangDiagram()}</div>`;
+  }
+  if(q.diagram === 'tangki'){
+    html += `<div class="diagram-box">${getTankiDiagram()}</div>`;
+  }
+  if(q.diagram === 'rovst'){
+    html += `<div class="diagram-box">${getRoVsTDiagram()}</div>`;
+  }
+  if(q.diagram === 'jupiter'){
+    html += `<div class="diagram-box">${getJupiterDiagram()}</div>`;
+  }
+
+  if(q.type === 'mc'){
+    const letters = ['A','B','C','D','E'];
+    html += '<ul class="options-list">';
+    q.options.forEach((opt, i) => {
+      const selected = state.answers[q.id] === i;
+      html += `<li class="option-item ${selected?'selected':''}" onclick="selectOption('${q.id}', ${i})">
+        <span class="option-letter">${letters[i]}</span>
+        <span class="option-text">${opt}</span>
+      </li>`;
+    });
+    html += '</ul>';
+  }
+
+  document.getElementById('questionCard').innerHTML = html;
+}
+
+function selectOption(qId, optIdx){
+  state.answers[qId] = optIdx;
+  renderQuestion();
+  renderNavDots();
+}
+
+function prevQuestion(){
+  if(state.currentQ > 0){ state.currentQ--; renderQuestion(); renderNavDots(); }
+}
+function nextQuestion(){
+  if(state.currentQ < state.questions.length-1){ state.currentQ++; renderQuestion(); renderNavDots(); }
+}
+
+// ===== SUBMIT =====
+function showSubmitPopup(){
+  const unanswered = state.questions.length - Object.keys(state.answers).length;
+  const msg = unanswered > 0
+    ? `Masih ada <strong>${unanswered} soal</strong> yang belum dijawab. Yakin ingin mengirim?`
+    : 'Semua soal telah dijawab. Yakin ingin mengakhiri dan mengirim jawaban?';
+  document.getElementById('popupMsg').innerHTML = msg;
+  document.getElementById('submitPopup').classList.add('show');
+}
+function closePopup(){ document.getElementById('submitPopup').classList.remove('show'); }
+
+function submitExam(){
+  closePopup();
+  clearInterval(state.timerInterval);
+  state.submitted = true;
+  document.getElementById('examHeader').style.display = 'none';
+  calculateAndShowResults();
+}
+
+// ===== RESULTS =====
+function calculateAndShowResults(){
+  const qs = state.questions;
+  let correct = 0, wrong = 0, unanswered = 0;
+
+  qs.forEach(q => {
+    if(state.answers[q.id] === undefined) unanswered++;
+    else if(state.answers[q.id] === q.correct) correct++;
+    else wrong++;
+  });
+
+  const score = Math.round((correct / qs.length) * 100);
+  const timeUsed = 3600 - state.timeLeft;
+  const tm = Math.floor(timeUsed/60), ts = timeUsed%60;
+
+  let grade, gradeColor, feedback;
+  if(score >= 90){ grade='A+'; gradeColor='#22c55e'; feedback='Luar biasa! Penguasaan materi Semifinal Anda sangat mendalam. Anda siap untuk tahap selanjutnya!'; }
+  else if(score >= 80){ grade='A'; gradeColor='#3b82f6'; feedback='Sangat baik! Pemahaman Anda terhadap materi analisis mendalam OSN Semifinal sangat solid.'; }
+  else if(score >= 70){ grade='B'; gradeColor='#8b5cf6'; feedback='Baik! Masih ada beberapa konsep yang perlu diperdalam, terutama pada soal-soal analisis terapan.'; }
+  else if(score >= 60){ grade='C'; gradeColor='#f59e0b'; feedback='Cukup baik. Perlu lebih banyak latihan pada soal-soal analisis mendalam dan aplikasi praktis Semifinal.'; }
+  else { grade='D'; gradeColor='#ef4444'; feedback='Tetap semangat! Pelajari kembali konsep dasar dan strategi menjawab soal Semifinal OSN secara sistematis.'; }
+
+  const circumference = 2 * Math.PI * 60;
+  const dashOffset = circumference - (score/100) * circumference;
+
+  let html = `
+    <div class="result-hero">
+      <div class="score-ring">
+        <svg width="160" height="160" viewBox="0 0 160 160">
+          <circle cx="80" cy="80" r="60" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="12"/>
+          <circle cx="80" cy="80" r="60" fill="none" stroke="${gradeColor}" stroke-width="12"
+            stroke-dasharray="${circumference}" stroke-dashoffset="${dashOffset}"
+            stroke-linecap="round" style="transition:stroke-dashoffset 1s ease"/>
+        </svg>
+        <div class="score-num">
+          <div class="num">${score}</div>
+          <div class="label">SKOR</div>
+        </div>
+      </div>
+      <div class="grade-badge" style="background:${gradeColor}22;color:${gradeColor};border:1px solid ${gradeColor}44">
+        Grade ${grade}
+      </div>
+      <h2>Hasil Ujian — ${state.nama}</h2>
+      <p style="color:rgba(255,255,255,0.4);font-size:13px;margin-bottom:12px">Kelas ${state.kelas} · Bidang ${state.subject.charAt(0).toUpperCase()+state.subject.slice(1)} · OSN Semifinal 2025</p>
+      <p class="feedback-text">${feedback}</p>
+    </div>
+
+    <div class="result-stats">
+      <div class="stat-card">
+        <div class="stat-val" style="color:#22c55e">${correct}</div>
+        <div class="stat-label">Benar</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val" style="color:#ef4444">${wrong}</div>
+        <div class="stat-label">Salah</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val" style="color:#94a3b8">${unanswered}</div>
+        <div class="stat-label">Belum Dijawab</div>
+      </div>
+    </div>
+
+    <div class="section-divider"><span>Waktu Pengerjaan</span></div>
+    <div style="text-align:center;margin-bottom:32px;color:rgba(255,255,255,0.5)">
+      ⏱ ${String(tm).padStart(2,'0')} menit ${String(ts).padStart(2,'0')} detik
+    </div>
+
+    <div class="review-section">
+      <h3>📝 Pembahasan Jawaban</h3>
+  `;
+
+  qs.forEach((q, idx) => {
+    const userAns = state.answers[q.id];
+    const isCorrect = userAns === q.correct;
+    const letters = ['A','B','C','D','E'];
+    const statusClass = userAns === undefined ? '' : (isCorrect ? 'correct-r' : 'wrong-r');
+
+    html += `<div class="review-item ${statusClass}">
+      <div class="review-q"><strong>Soal ${idx+1}:</strong> ${q.text.substring(0,120)}${q.text.length>120?'...':''}</div>`;
+
+    if(userAns !== undefined){
+      html += `<div class="review-ans ${isCorrect?'correct-ans':'wrong-ans'}">
+        ${isCorrect ? '✅' : '❌'} Jawaban Anda: <strong>${letters[userAns]}. ${q.options[userAns]}</strong>
+      </div>`;
+    } else {
+      html += `<div class="review-ans" style="color:#94a3b8">⬜ Tidak dijawab</div>`;
+    }
+
+    if(!isCorrect || userAns === undefined){
+      html += `<div class="review-ans correct-ans">✅ Jawaban Benar: <strong>${letters[q.correct]}. ${q.options[q.correct]}</strong></div>`;
+    }
+    html += `<div class="explanation">💡 <strong>Pembahasan:</strong> ${q.explanation}</div>`;
+    html += '</div>';
+  });
+
+  html += `</div>
+    <button class="btn-restart" onclick="resetApp()">🔄 Mulai Ulang Ujian</button>
+  `;
+
+  document.getElementById('resultContent').innerHTML = html;
+  showScreen('screenResult');
+}
+
+function resetApp(){
+  clearInterval(state.timerInterval);
+  state = { nama:'', kelas:'', subject:'', questions:[], answers:{}, currentQ:0, startTime:null, timerInterval:null, timeLeft:3600, submitted:false };
+  selectedSubject = '';
+  document.getElementById('examHeader').style.display='none';
+  document.getElementById('timerDisplay').classList.remove('urgent');
+  document.getElementById('inputNama').value='';
+  document.getElementById('inputKelas').value='';
+  document.getElementById('btnStart').disabled=true;
+  document.querySelectorAll('.subject-option').forEach(o=>o.classList.remove('selected'));
+  document.getElementById('btnStartExam').disabled=true;
+  showScreen('screenWelcome');
+}
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+// ===== DIAGRAMS (SVG) =====
+function getBatangDiagram(){
+  return `<svg viewBox="0 0 320 260" xmlns="http://www.w3.org/2000/svg" width="280">
+    <!-- Background -->
+    <rect x="0" y="0" width="320" height="260" fill="#f8faff" rx="8"/>
+
+    <!-- Coordinate axes -->
+    <line x1="80" y1="220" x2="80" y2="20" stroke="#1e3050" stroke-width="2" marker-end="url(#arrow)"/>
+    <line x1="50" y1="50" x2="280" y2="50" stroke="#1e3050" stroke-width="2" marker-end="url(#arrow)"/>
+    <text x="82" y="18" font-size="14" fill="#1e3050" font-family="serif" font-style="italic">y</text>
+    <text x="282" y="54" font-size="14" fill="#1e3050" font-family="serif" font-style="italic">x</text>
+    <text x="75" y="54" font-size="13" fill="#1e3050" font-weight="bold">O</text>
+
+    <!-- Poros (pivot) -->
+    <circle cx="80" cy="50" r="6" fill="#1e3050"/>
+    <rect x="68" y="30" width="24" height="12" fill="#888" rx="2"/>
+
+    <!-- Batang AB -->
+    <rect x="72" y="50" width="16" height="160" fill="#4a7fd4" rx="4"/>
+    <text x="55" y="60" font-size="11" fill="#1e3050" font-weight="bold">A</text>
+    <text x="55" y="220" font-size="11" fill="#1e3050" font-weight="bold">B</text>
+
+    <!-- Panjang L label -->
+    <line x1="60" y1="50" x2="60" y2="210" stroke="#888" stroke-width="1" stroke-dasharray="3"/>
+    <text x="30" y="135" font-size="12" fill="#555" font-family="serif" font-style="italic">L</text>
+    <text x="33" y="115" font-size="10" fill="#888">m₁</text>
+
+    <!-- Peluru -->
+    <circle cx="210" cy="150" r="12" fill="#e8a020"/>
+    <text x="224" y="155" font-size="11" fill="#555" font-family="serif" font-style="italic">m₂</text>
+
+    <!-- Arrow velocity v0 -->
+    <line x1="200" y1="150" x2="108" y2="150" stroke="#e8a020" stroke-width="2.5" marker-end="url(#arrowGold)"/>
+    <text x="155" y="144" font-size="12" fill="#e8a020" font-family="serif" font-style="italic">v₀</text>
+
+    <!-- Gravity g -->
+    <line x1="250" y1="30" x2="250" y2="70" stroke="#e74c3c" stroke-width="2" marker-end="url(#arrowRed)"/>
+    <text x="255" y="55" font-size="12" fill="#e74c3c" font-family="serif" font-style="italic">g</text>
+
+    <!-- Defs for arrows -->
+    <defs>
+      <marker id="arrow" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+        <polygon points="0 0, 8 3, 0 6" fill="#1e3050"/>
+      </marker>
+      <marker id="arrowGold" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+        <polygon points="0 0, 8 3, 0 6" fill="#e8a020"/>
+      </marker>
+      <marker id="arrowRed" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+        <polygon points="0 0, 8 3, 0 6" fill="#e74c3c"/>
+      </marker>
+    </defs>
+  </svg>`;
+}
+
+function getTankiDiagram(){
+  return `<svg viewBox="0 0 280 220" xmlns="http://www.w3.org/2000/svg" width="260">
+    <rect x="0" y="0" width="280" height="220" fill="#f8faff" rx="8"/>
+    <!-- Tank outer -->
+    <rect x="30" y="30" width="200" height="160" fill="none" stroke="#1e3050" stroke-width="3" rx="4"/>
+    <!-- Water fill -->
+    <rect x="33" y="33" width="194" height="154" fill="#93c5fd" opacity="0.4" rx="2"/>
+    <!-- Water label -->
+    <text x="45" y="170" font-size="13" fill="#1e3050" font-family="serif" font-style="italic">ρ</text>
+    <text x="55" y="172" font-size="10" fill="#1e3050" font-family="serif" font-style="italic">w</text>
+    <!-- Volume V -->
+    <text x="45" y="190" font-size="12" fill="#1e3050" font-family="serif" font-style="italic">V</text>
+    <!-- Floating object -->
+    <circle cx="140" cy="110" r="28" fill="#fbbf24" opacity="0.9" stroke="#f59e0b" stroke-width="2"/>
+    <text x="129" y="107" font-size="12" fill="#1e3050" font-family="serif" font-style="italic">ρ</text>
+    <text x="139" y="109" font-size="10" fill="#1e3050" font-family="serif" font-style="italic">m</text>
+    <text x="130" y="122" font-size="11" fill="#1e3050" font-family="serif" font-style="italic">v</text>
+    <!-- Arrow up a -->
+    <line x1="140" y1="80" x2="140" y2="55" stroke="#22c55e" stroke-width="2.5" marker-end="url(#arrowGreen)"/>
+    <text x="145" y="72" font-size="13" fill="#22c55e" font-family="serif" font-style="italic">a</text>
+    <!-- Arrow down g -->
+    <line x1="220" y1="50" x2="220" y2="80" stroke="#e74c3c" stroke-width="2.5" marker-end="url(#arrowRed2)"/>
+    <text x="225" y="68" font-size="13" fill="#e74c3c" font-family="serif" font-style="italic">g</text>
+    <defs>
+      <marker id="arrowGreen" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+        <polygon points="0 0, 8 3, 0 6" fill="#22c55e"/>
+      </marker>
+      <marker id="arrowRed2" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+        <polygon points="0 0, 8 3, 0 6" fill="#e74c3c"/>
+      </marker>
+    </defs>
+  </svg>`;
+}
+
+function getRoVsTDiagram(){
+  // Kurva kalibrasi Ro vs T
+  const canvas = document.createElement('canvas');
+  canvas.width = 400; canvas.height = 280;
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = '#fff';
+  ctx.fillRect(0,0,400,280);
+
+  // Axes
+  const px = 60, py = 20, pw = 310, ph = 220;
+  ctx.strokeStyle = '#1e3050'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(px,py); ctx.lineTo(px,py+ph); ctx.lineTo(px+pw,py+ph); ctx.stroke();
+
+  // Axis labels
+  ctx.fillStyle = '#1e3050'; ctx.font = '12px serif'; ctx.textAlign='center';
+  ctx.fillText('Vitrinite Reflectance, Ro (%)', px+pw/2, py+ph+35);
+  ctx.save(); ctx.translate(18, py+ph/2); ctx.rotate(-Math.PI/2);
+  ctx.fillText('Paleo-temperature (°C)', 0, 0); ctx.restore();
+
+  // Title
+  ctx.fillStyle = '#333'; ctx.font = 'bold 12px sans-serif';
+  ctx.fillText('Gambar 3. Kurva Kalibrasi Ro ke Paleo-T', px+pw/2, 14);
+
+  // Grid & tick marks
+  ctx.strokeStyle = '#dde'; ctx.lineWidth = 0.5;
+  // Y axis: 200-450 mapped to ph
+  const yMin=200, yMax=450;
+  for(let t=200; t<=450; t+=25){
+    const y = py + ph - (t-yMin)/(yMax-yMin)*ph;
+    ctx.beginPath(); ctx.moveTo(px,y); ctx.lineTo(px+pw,y); ctx.stroke();
+    ctx.fillStyle='#888'; ctx.font='10px sans-serif'; ctx.textAlign='right';
+    ctx.fillText(t, px-4, y+3);
+  }
+  // X axis: 0-2 Ro
+  const xMin=0, xMax=2;
+  for(let r=0; r<=2; r+=0.5){
+    const x = px + (r-xMin)/(xMax-xMin)*pw;
+    ctx.beginPath(); ctx.moveTo(x,py); ctx.lineTo(x,py+ph); ctx.stroke();
+    ctx.fillStyle='#888'; ctx.font='10px sans-serif'; ctx.textAlign='center';
+    ctx.fillText(r.toFixed(1), x, py+ph+14);
+  }
+
+  // Curve: T = 120*ln(Ro) + 360 for Ro 0.4..2.0
+  ctx.strokeStyle = '#e8a020'; ctx.lineWidth = 3;
+  ctx.beginPath();
+  let first = true;
+  for(let ro=0.40; ro<=2.01; ro+=0.02){
+    const T = 120*Math.log(ro)+360;
+    const x = px + (ro-xMin)/(xMax-xMin)*pw;
+    const y = py + ph - (T-yMin)/(yMax-yMin)*ph;
+    if(first){ ctx.moveTo(x,y); first=false; }
+    else ctx.lineTo(x,y);
+  }
+  ctx.stroke();
+
+  // Formula annotation
+  ctx.fillStyle='#555'; ctx.font='11px monospace'; ctx.textAlign='left';
+  ctx.fillText('T(°C) = 120·ln(Ro) + 360', px+20, py+ph-20);
+  ctx.fillText('Domain: 0.4 ≤ Ro ≤ 2.0', px+20, py+ph-6);
+
+  // Data points
+  const samples = [
+    {id:'C1',ro:0.6},{id:'C2',ro:0.7},{id:'C3',ro:0.8},
+    {id:'C4',ro:1.0},{id:'C5',ro:1.1},{id:'C6',ro:1.5},{id:'C7',ro:1.2}
+  ];
+  ctx.fillStyle='#e74c3c';
+  samples.forEach(s => {
+    const T = 120*Math.log(s.ro)+360;
+    const x = px + (s.ro-xMin)/(xMax-xMin)*pw;
+    const y = py + ph - (T-yMin)/(yMax-yMin)*ph;
+    ctx.beginPath(); ctx.arc(x,y,4,0,Math.PI*2); ctx.fill();
+  });
+
+  return `<img src="${canvas.toDataURL()}" style="max-width:100%;border-radius:8px"/>`;
+}
+
+function getJupiterDiagram(){
+  return `<svg viewBox="0 0 320 240" xmlns="http://www.w3.org/2000/svg" width="300">
+    <rect width="320" height="240" fill="#f0f4ff" rx="8"/>
+    <!-- Outer Jupiter circle (R) -->
+    <circle cx="160" cy="120" r="90" fill="#fde68a" opacity="0.3" stroke="#e8a020" stroke-width="2" stroke-dasharray="6,3"/>
+    <!-- Gas layer ring -->
+    <circle cx="160" cy="120" r="90" fill="none" stroke="#e8a020" stroke-width="2"/>
+    <!-- Inner solid core (Rs = R/2) -->
+    <circle cx="160" cy="120" r="45" fill="#f59e0b" opacity="0.6" stroke="#d97706" stroke-width="2"/>
+    <!-- Center -->
+    <circle cx="160" cy="120" r="3" fill="#1e3050"/>
+    <!-- Labels -->
+    <text x="160" y="125" font-size="12" fill="#1e3050" font-family="serif" font-weight="bold" text-anchor="middle">Pusat</text>
+    <!-- R_s arrow -->
+    <line x1="160" y1="120" x2="200" y2="88" stroke="#d97706" stroke-width="1.5" marker-end="url(#aD)"/>
+    <text x="188" y="100" font-size="12" fill="#d97706" font-style="italic">R_s</text>
+    <!-- R arrow -->
+    <line x1="160" y1="120" x2="240" y2="60" stroke="#e8a020" stroke-width="1.5" marker-end="url(#aD)"/>
+    <text x="220" y="78" font-size="12" fill="#e8a020" font-style="italic">R</text>
+    <!-- rho_s label -->
+    <text x="148" y="118" font-size="11" fill="#7c3aed" font-style="italic">ρ_s</text>
+    <!-- rho_g label -->
+    <text x="195" y="145" font-size="11" fill="#0369a1" font-style="italic">ρ_g(1−r/R)</text>
+    <defs>
+      <marker id="aD" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+        <polygon points="0 0, 8 3, 0 6" fill="#e8a020"/>
+      </marker>
+    </defs>
+  </svg>`;
+}
+</script>
+</body>
+</html>
